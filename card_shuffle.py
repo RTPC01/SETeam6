@@ -1,24 +1,19 @@
-# card_shuffle.py
 from card_gen import Card, generate_cards
 from random import shuffle
 from typing import List
 
 
-# 이전에 작성한 shuffle_and_deal_cards 함수를 여기에 붙여넣기
-def shuffle_and_deal_cards(all_cards: List[Card], num_players: int, cards_per_player: int):
-    # 카드를 셔플한다
-    shuffle(all_cards)
+def shuffle_cards(cards):
+    shuffled_cards = cards.copy()
+    shuffle(shuffled_cards)
+    return shuffled_cards
 
-    # 플레이어들의 카드 목록을 초기화한다
-    players_cards = [[] for _ in range(num_players)]
 
-    # 카드를 플레이어들에게 나눠준다
-    for i in range(num_players * cards_per_player):
-        player_index = i % num_players
-        card = all_cards.pop()
-        players_cards[player_index].append(card)
-
-    return players_cards
+def shuffle_and_deal_cards(cards, num_players, cards_per_player):
+    shuffled_cards = shuffle_cards(cards)
+    players_cards = [shuffled_cards[i * cards_per_player:(i + 1) * cards_per_player] for i in range(num_players)]
+    remaining_deck = shuffled_cards[num_players * cards_per_player:]
+    return players_cards, remaining_deck
 
 
 '''

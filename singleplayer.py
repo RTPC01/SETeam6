@@ -6,7 +6,7 @@ from card_shuffle import shuffle_and_deal_cards
 
 def singleplayer(screen, clock, font, font_big):
     all_cards = generate_cards()
-    players_cards = shuffle_and_deal_cards(all_cards, num_players=4, cards_per_player=7)
+    players_cards = shuffle_and_deal_cards(all_cards, num_players=2, cards_per_player=7)
 
     player1_cards = players_cards[0]
     player2_cards = players_cards[1]
