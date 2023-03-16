@@ -1,6 +1,4 @@
-from card_gen import Card, generate_cards
 from random import shuffle
-from typing import List
 
 
 def shuffle_cards(cards):
