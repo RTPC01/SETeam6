@@ -2,6 +2,7 @@ import pygame
 import random
 from card_gen import Card, generate_cards
 from card_shuffle import shuffle_and_deal_cards
+play_drawn_card_button = pygame.Rect(0, 0, 430, 50)
 
 
 def draw_cards(screen, cards, x, y, max_per_row, spacing, hovered_card_index=None):
@@ -72,6 +73,14 @@ def get_clicked_card(cards, x, y, max_per_row, spacing, mouse_x, mouse_y):
         if card_rect.collidepoint(mouse_x, mouse_y):
             return i, card
     return None, None
+
+
+def draw_button(screen, text, font, color, rect):
+    pygame.draw.rect(screen, (255, 255, 255), rect, 2)
+    text_surface = font.render(text, True, color)
+    text_rect = text_surface.get_rect()
+    text_rect.center = rect.center
+    screen.blit(text_surface, text_rect)
 
 
 def get_top_card(deck):
@@ -160,7 +169,10 @@ def main():
                     mouse_x, mouse_y = pygame.mouse.get_pos()
                     clicked_card_index, clicked_card = get_clicked_card(player1_cards, x, y, max_per_row, spacing,
                                                                         mouse_x, mouse_y)
-
+                    if draw_requested and play_drawn_card_button.collidepoint(mouse_x, mouse_y):
+                        draw_requested = False
+                        new_drawn_card = None
+                        player_turn = False
                     if clicked_card is not None:
                         top_card = get_top_card(discard_pile)
                         if draw_requested and clicked_card == new_drawn_card and can_play_card(clicked_card, top_card):
@@ -213,6 +225,12 @@ def main():
 
             top_card = get_top_card(discard_pile)
             draw_top_card(screen, top_card, played_card_x, played_card_y)
+
+            # 드로우 요청 시 버튼 표시
+            if draw_requested and can_play_card(new_drawn_card, top_card):
+                play_drawn_card_button.topleft = (screen.get_rect().centerx + 100, screen.get_rect().centery)
+                draw_button(screen, "Click on the remaining deck to turn.", font, (255, 255, 255),
+                            play_drawn_card_button)
 
             # 게임 종료 조건 확인 및 메시지 출력
             if len(player1_cards) == 0:
