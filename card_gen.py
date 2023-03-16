@@ -1,4 +1,3 @@
-import game_classes
 import pygame
 
 from random import shuffle
@@ -50,10 +49,9 @@ def generate_cards():
     return cards
 
 
-all_cards = generate_cards()
-
 # Check_List
 '''
+all_cards = generate_cards()
 for card in all_cards:
     print(f"Card name: {card.name}, Color: {card.color}, Type: {card.type}")
 '''

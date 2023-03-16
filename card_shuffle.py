@@ -21,6 +21,7 @@ def shuffle_and_deal_cards(all_cards: List[Card], num_players: int, cards_per_pl
     return players_cards
 
 
+'''
 # 카드 생성
 all_cards = generate_cards()
 
@@ -35,3 +36,4 @@ for i, player_cards in enumerate(players_cards):
     for card in player_cards:
         print(card.name)
     print()
+'''

@@ -1,16 +1,63 @@
-# 샘플 Python 스크립트입니다.
-
-# Shift+F10을(를) 눌러 실행하거나 내 코드로 바꿉니다.
-# 클래스, 파일, 도구 창, 액션 및 설정을 어디서나 검색하려면 Shift 두 번을(를) 누릅니다.
-
-
-def print_hi(name):
-    # 스크립트를 디버그하려면 하단 코드 줄의 중단점을 사용합니다.
-    print(f'Hi, {name}')  # 중단점을 전환하려면 Ctrl+F8을(를) 누릅니다.
+import pygame
+from card_gen import Card, generate_cards
+from card_shuffle import shuffle_and_deal_cards
 
 
-# 스크립트를 실행하려면 여백의 녹색 버튼을 누릅니다.
-if __name__ == '__main__':
-    print_hi('PyCharm')
+def draw_cards(screen, cards, x, y, spacing, hovered_card_index=None):
+    for i, card in enumerate(cards):
+        card_rect = card.card_img.get_rect()
+        card_rect.topleft = (x + i * spacing, y)
+        if i == hovered_card_index:
+            card_rect.y -= 110  # 카드를 위로 올립니다.
+        screen.blit(card.card_img, card_rect)
 
-# https://www.jetbrains.com/help/pycharm/에서 PyCharm 도움말 참조
+
+def find_hovered_card(cards, x, y, spacing, mouse_x, mouse_y):
+    for i, card in enumerate(cards):
+        card_rect = card.card_img.get_rect()
+        card_rect.topleft = (x + i * spacing, y)
+        if card_rect.collidepoint(mouse_x, mouse_y):
+            return i
+    return None
+
+
+def main():
+    pygame.init()
+
+    screen = pygame.display.set_mode((1000, 800))
+    pygame.display.set_caption("UNO Game")
+
+    clock = pygame.time.Clock()
+
+    all_cards = generate_cards()
+    players_cards = shuffle_and_deal_cards(all_cards, num_players=4, cards_per_player=7)
+
+    player1_cards = players_cards[0]
+
+    x = 50
+    y = 600
+    spacing = 60
+
+    running = True
+    hovered_card_index = None
+
+    while running:
+        screen.fill((0, 128, 0))
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+            if event.type == pygame.MOUSEMOTION:
+                mouse_x, mouse_y = pygame.mouse.get_pos()
+                hovered_card_index = find_hovered_card(player1_cards, x, y, spacing, mouse_x, mouse_y)
+
+        draw_cards(screen, player1_cards, x, y, spacing, hovered_card_index)
+
+        pygame.display.flip()
+        clock.tick(60)
+
+    pygame.quit()
+
+
+if __name__ == "__main__":
+    main()
