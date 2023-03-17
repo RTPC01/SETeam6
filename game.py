@@ -20,6 +20,37 @@ FPS = 60
 play_drawn_card_button = pygame.Rect(0, 0, 430, 110)
 
 
+def game_loop(color_blind_mode, screen_size):
+    pygame.init()
+
+    screen_size_map = {
+        "Large": (1400, 800),
+        "Medium": (1000, 600),
+        "Small": (800, 480)
+    }
+
+    screen = pygame.display.set_mode(screen_size_map[screen_size])
+    pygame.display.set_caption("UNO Game")
+    clock = pygame.time.Clock()
+
+    running = True
+
+    while running:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+
+        screen.fill((0, 128, 0))
+
+        # Render game elements here
+        # Apply color_blind_mode if necessary
+
+        pygame.display.flip()
+        clock.tick(60)
+
+    pygame.quit()
+
+
 def singleplayer():
     global FPS
     computer_action_time = None

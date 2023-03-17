@@ -1,4 +1,5 @@
 import pygame
+from settings import settings_menu
 
 
 def draw_centered_text(screen, text, font, color, x, y):
@@ -9,7 +10,7 @@ def draw_centered_text(screen, text, font, color, x, y):
     screen.blit(text_surface, text_rect)
 
 
-def main_menu():
+def main_menu(screen):
     pygame.init()
 
     screen = pygame.display.set_mode((1400, 800))
@@ -33,13 +34,16 @@ def main_menu():
         if keys[pygame.K_1]:
             game_mode = 'singleplayer'
             menu_running = False
+        elif keys[pygame.K_2]:
+            color_blind_mode, current_screen_size = settings_menu()
         elif keys[pygame.K_3]:
             menu_running = False
             game_mode = 'quit'
 
         draw_centered_text(screen, "UNO Game", font_big, (255, 255, 255), screen.get_rect().centerx, 100)
         draw_centered_text(screen, "Press 1 for Singleplayer", font, (255, 255, 255), screen.get_rect().centerx, 300)
-        draw_centered_text(screen, "Press 3 to Quit", font, (255, 255, 255), screen.get_rect().centerx, 400)
+        draw_centered_text(screen, "Press 2 for Settings", font, (255, 255, 255), screen.get_rect().centerx, 400)
+        draw_centered_text(screen, "Press 3 to Quit", font, (255, 255, 255), screen.get_rect().centerx, 500)
 
         pygame.display.flip()
         clock.tick(60)
