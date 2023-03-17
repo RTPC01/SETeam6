@@ -2,7 +2,7 @@ import pygame
 import random
 from card_gen import Card, generate_cards
 from card_shuffle import shuffle_and_deal_cards
-play_drawn_card_button = pygame.Rect(0, 0, 430, 50)
+play_drawn_card_button = pygame.Rect(0, 0, 430, 110)
 
 
 def draw_cards(screen, cards, x, y, max_per_row, spacing, hovered_card_index=None):
@@ -77,10 +77,16 @@ def get_clicked_card(cards, x, y, max_per_row, spacing, mouse_x, mouse_y):
 
 def draw_button(screen, text, font, color, rect):
     pygame.draw.rect(screen, (255, 255, 255), rect, 2)
-    text_surface = font.render(text, True, color)
-    text_rect = text_surface.get_rect()
-    text_rect.center = rect.center
-    screen.blit(text_surface, text_rect)
+    lines = text.split('\n')
+    line_spacing = font.get_linesize() + 5  # Add some additional space between the lines
+    total_height = line_spacing * len(lines)
+
+    for index, line in enumerate(lines):
+        text_surface = font.render(line, True, color)
+        text_rect = text_surface.get_rect()
+        text_rect.centerx = rect.centerx
+        text_rect.centery = rect.centery - total_height // 2 + index * line_spacing
+        screen.blit(text_surface, text_rect)
 
 
 def get_top_card(deck):
@@ -120,7 +126,7 @@ def main():
     screen = pygame.display.set_mode((1400, 800))
     pygame.display.set_caption("UNO Game")
     clock = pygame.time.Clock()
-    font = pygame.font.Font(None, 36)
+    font = pygame.font.Font(None, 30)  # Change the size from 36 to 30
     font_big = pygame.font.Font(None, 72)
 
     game_mode = main_menu()
@@ -228,6 +234,10 @@ def main():
 
             # 드로우 요청 시 버튼 표시
             if draw_requested and can_play_card(new_drawn_card, top_card):
+                play_drawn_card_button.topleft = (screen.get_rect().centerx + 100, screen.get_rect().centery)
+                draw_button(screen, "Click on the remaining deck to turn.\n Or If you want to submit a drawn card,"
+                                    "\nclick on the drawn card.", font, (255, 255, 255), play_drawn_card_button)
+            elif draw_requested:
                 play_drawn_card_button.topleft = (screen.get_rect().centerx + 100, screen.get_rect().centery)
                 draw_button(screen, "Click on the remaining deck to turn.", font, (255, 255, 255),
                             play_drawn_card_button)
