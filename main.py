@@ -5,7 +5,7 @@ from card_shuffle import shuffle_and_deal_cards
 play_drawn_card_button = pygame.Rect(0, 0, 430, 110)
 
 
-def draw_cards(screen, cards, x, y, max_per_row, spacing, hovered_card_index=None):
+def draw_cards(screen, cards, x, y, max_per_row, spacing, hovered_card_index=None, show_back=False):
     for i, card in enumerate(cards):
         row = i // max_per_row
         column = i % max_per_row
@@ -13,7 +13,10 @@ def draw_cards(screen, cards, x, y, max_per_row, spacing, hovered_card_index=Non
         card_rect.topleft = (x + column * spacing, y + row * spacing)
         if i == hovered_card_index:
             card_rect.y -= 50
-        screen.blit(card.card_img, card_rect)
+        if show_back:
+            screen.blit(card.card_img_back, card_rect)
+        else:
+            screen.blit(card.card_img, card_rect)
 
 
 def find_hovered_card(cards, x, y, max_per_row, spacing, mouse_x, mouse_y):
@@ -223,7 +226,7 @@ def main():
             hovered_card_index2 = find_hovered_card(player2_cards, x2, y2, max_per_row, spacing2, mouse_x, mouse_y)
 
             draw_cards(screen, player1_cards, x, y, max_per_row, spacing, hovered_card_index)
-            draw_cards(screen, player2_cards, x2, y2, max_per_row, spacing2, hovered_card_index2)
+            draw_cards(screen, player2_cards, x2, y2, max_per_row, spacing2, hovered_card_index2, show_back=True)
 
             # 남은 카드 더미 그리기
             if remaining_deck:
