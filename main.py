@@ -105,7 +105,11 @@ def draw_top_card(screen, card, x, y):
 
 # 카드를 놓을 수 있는지 확인하는 함수
 def can_play_card(card, top_card):
-    return card.color == top_card.color or card.value == top_card.value or card.value in ('wild', 'wild_draw_4')
+    return (card.color == top_card.color or
+            card.value == top_card.value or
+            card.value in ('wild', 'wild_draw_4') or
+            (top_card.value in ('skip', 'reverse', 'draw_2') and card.value == top_card.value))
+
 
 
 # 컴퓨터 플레이어의 턴을 처리하는 함수
@@ -121,6 +125,33 @@ def computer_turn(player2_cards, discard_pile, remaining_deck):
         player2_cards.append(remaining_deck.pop())
 
 
+def process_special_card(played_card, player, opponent, remaining_deck):
+    if played_card.value == "skip":
+        return False  # 턴을 넘깁니다.
+
+    if played_card.value == "reverse":
+        pass  # 현재 게임에서는 무시됩니다. 2명 플레이어일 때는 효과가 없습니다.
+
+    if played_card.value == "draw_2":
+        for _ in range(2):
+            if remaining_deck:
+                opponent.append(remaining_deck.pop())
+            else:
+                break
+        return False  # 턴을 넘깁니다.
+
+    if played_card.value == "wild":
+        played_card.color = random.choice(['red', 'blue', 'green', 'yellow'])
+
+    if played_card.value == "wild_draw_4":
+        for _ in range(4):
+            if remaining_deck:
+                opponent.append(remaining_deck.pop())
+            else:
+                break
+        played_card.color = random.choice(['red', 'blue', 'green', 'yellow'])
+
+    return True
 
 def main():
     pygame.init()
@@ -195,7 +226,11 @@ def main():
                             if clicked_card is not None and can_play_card(clicked_card, top_card):
                                 discard_pile.append(clicked_card)
                                 player1_cards.pop(clicked_card_index)
-                                player_turn = False
+                                if clicked_card.is_special():
+                                    player_turn = process_special_card(clicked_card, player1_cards, player2_cards,
+                                                                       remaining_deck)
+                                else:
+                                    player_turn = False
                             elif remaining_deck_rect.collidepoint(mouse_x, mouse_y):
                                 draw_requested = True
                                 new_drawn_card = remaining_deck.pop()
@@ -218,8 +253,17 @@ def main():
             if not player_turn:
                 delay_time = random.randint(1000, 3000)  # 1~3초 사이의 랜덤한 시간(밀리초 단위) 생성
                 pygame.time.delay(delay_time)  # 랜덤한 지연 시간 적용
-                computer_turn(player2_cards, discard_pile, remaining_deck)
-                player_turn = True
+                top_card = get_top_card(discard_pile)
+                playable_cards = [card for card in player2_cards if can_play_card(card, top_card)]
+
+                if playable_cards:
+                    played_card = random.choice(playable_cards)
+                    discard_pile.append(played_card)
+                    player2_cards.remove(played_card)
+                    if played_card.is_special():
+                        player_turn = process_special_card(played_card, player2_cards, player1_cards, remaining_deck)
+                    else:
+                        player_turn = True
 
             mouse_x, mouse_y = pygame.mouse.get_pos()
             hovered_card_index = find_hovered_card(player1_cards, x, y, max_per_row, spacing, mouse_x, mouse_y)
